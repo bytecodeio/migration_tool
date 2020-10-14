@@ -23,6 +23,7 @@
  */
 
 import { Sidebar } from "./components/Sidebar"
+import { MigrationTool } from "./components/MigrationTool"
 import { CoreSDKFunctions } from "./components/CoreSDKFunctions"
 import { ApiFunctions } from "./components/ApiFunctions"
 import React, { useState } from "react"
@@ -64,14 +65,21 @@ export const App: React.FC<AppProps> = hot(() => {
       <ThemeProvider theme={theme}>
         <>
           <GlobalStyle />
-          <Layout>
+          <Layout> <Box>
+            <MigrationTool />
+          </Box>
+          </Layout>
+          {/* <Layout>
             <Sidebar route={route} routeState={routeState}/>
             <Box>
               <Switch>
                 <Route path={ROUTES.API_ROUTE}>
                   <ApiFunctions />
                 </Route>
-                <Route path={[ROUTES.CORESDK_ROUTE, `${ROUTES.CORESDK_ROUTE}?test=abcd`]}>
+                <Route path={[ROUTES.MIGRATION_ROUTE, `${ROUTES.CORESDK_ROUTE}?test=abcd`]}>
+                  <MigrationUtility />
+                </Route>
+                <Route path={[ROUTES.CORESDK_ROUTE]}>
                   <CoreSDKFunctions />
                 </Route>
                 <Route path={ROUTES.EMBED_DASHBOARD}>
@@ -92,7 +100,7 @@ export const App: React.FC<AppProps> = hot(() => {
                 <Redirect to={ROUTES.API_ROUTE} />
               </Switch>
             </Box>
-          </Layout>
+          </Layout>*/}
         </>
       </ThemeProvider>
     </ExtensionProvider>
@@ -102,6 +110,7 @@ export const App: React.FC<AppProps> = hot(() => {
 export const Layout = styled(Box)`
   display: grid;
   grid-gap: 20px;
-  grid-template-columns: 200px auto;
+  margin-left: 20px;
+  grid-template-columns: auto;
   width: 100vw
 `

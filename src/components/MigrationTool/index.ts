@@ -23,4 +23,4 @@
  */
 
 
- export * from "./CoreSDKFunctions"
+ export * from "./MigrationTool"

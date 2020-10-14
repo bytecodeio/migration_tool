@@ -25,7 +25,7 @@
 import { Dispatch } from 'react'
 
 export const initialState = {
-  postsServer: "http://127.0.0.1:3000",
+  postsServer: "http://localhost:3000",
   posts: [],
   name: "",
   title: "",

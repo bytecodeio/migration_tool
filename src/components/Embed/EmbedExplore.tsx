@@ -50,7 +50,7 @@ export const EmbedExplore: React.FC<EmbedProps> = () => {
     const hostUrl = extensionContext?.extensionSDK?.lookerHostData?.hostUrl
     if (el && hostUrl) {
       LookerEmbedSDK.init(hostUrl)
-      LookerEmbedSDK.createExploreWithId('thelook/products')
+      LookerEmbedSDK.createExploreWithId('test_project/holdings')
         .appendTo(el)
         .on('explore:ready', updateRunButton.bind(null, false))
         .on('explore:run:start', updateRunButton.bind(null, true))

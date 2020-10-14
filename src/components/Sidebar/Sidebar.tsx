@@ -39,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ route }) => {
             Api Functions
           </MenuItem>
         </StyledRouterLink>
+        
         <StyledRouterLink to={ROUTES.CORESDK_ROUTE}>
           <MenuItem icon="Clock" current={route.startsWith(ROUTES.CORESDK_ROUTE)}>
             Core SDK Functions
