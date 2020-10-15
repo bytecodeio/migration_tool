@@ -25,11 +25,12 @@ export const MigrationTool = () => {
 
   const [instructions, setInstructions] = useState("Enter a target environment URL, API3 Key and Secret")
   const [projects, setProjects] = useState<Array<any>>([])
-  const [environments, setEnvironments] = useState<Array<IEnvironment>>([{ name: "", uri: "", key: "", secret: "" }])
+  const [environments, setEnvironments] = useState<Array<IEnvironment>>([{ name: "", uri: "", key: "", secret: "", token:"" }])
   const [isValidationSuccess, setIsValidationSuccess] = useState<Boolean>()
   const [openEnvironmentIndex, setOpenEnvironmentIndex] = useState<number | null>(0)
  
   const [token, setToken] =useState<string>()
+  const [sharedFolderId, setSharedFolderId] =useState<string>()
 
   const sdk = getCore40SDK
 
@@ -37,43 +38,51 @@ export const MigrationTool = () => {
   //   authHandler(sampleEnvironment)
   // },[fetching])
 
-  // useEffect(() => {
-  //   if (location.search || location.pathname.includes('?')) {
-  //     const route = `${location.pathname}${location.search}`
-  //     if (routeData.route !== route || !isEqual(routeData.routeState, location.state)) {
-  //       setRouteData({ route, routeState: location.state })
-  //       updateMessages(`location: ${location.pathname}${location.search} ${JSON.stringify(location.state)}`)
-  //     }
-  //   }
-  // }, [location])
+  useEffect(() => {
+    if (location.search || location.pathname.includes('?')) {
+      const route = `${location.pathname}${location.search}`
+      if (routeData.route !== route || !isEqual(routeData.routeState, location.state)) {
+        setRouteData({ route, routeState: location.state })
+        updateMessages(`location: ${location.pathname}${location.search} ${JSON.stringify(location.state)}`)
+      }
+    }
+  }, [location])
 
   const extensionContext = useContext<ExtensionContextData>(ExtensionContext)
   // Get access to the extension SDK and the looker API SDK.
   const { extensionSDK, core40SDK } = extensionContext
 
-  const experimentClick = async () => {
+  const getToken = async (i: number, environment:IEnvironment) => {
     const result = await extensionSDK.serverProxy(
-      'https://hack.looker.com:19999/api/4.0/login',
+      `${environment.uri}/api/4.0/login`,
       {
         method: 'POST',
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
         },
         body:
-          'client_id=fNKf4PRXfyNmshTzqmq9&client_secret=399FFJ9c262Cztwtj78chDsk',
+          `client_id=${environment.key}&client_secret=${environment.secret}`,
       }
     )
     console.log({ result })
-    setToken(result.body.access_token || '')
+    return result.status
+    setEnvironmentAttribute(i, null,null,null,null,(result.body.access_token || ''))
+    
+  }
+  const showTokenClick = () => {
+    console.log(sharedFolderId)
+  }
+  const getFoldersClick = async (environment:IEnvironment) => {
     const folders = await extensionSDK.serverProxy(
-      'https://hack.looker.com:19999/api/4.0/folders/home',
+      `${environment.uri}/api/4.0/folders/home`,
       {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${result.body.access_token}`,
+          Authorization: `Bearer ${environment.token}`,
         },
       }
     )
+    setSharedFolderId(folders.body.id)
     console.log({ folders })
   }
 
@@ -111,12 +120,20 @@ export const MigrationTool = () => {
   const testConnection = async (i:number) => {
     const environment = environments[i]
     // initialize(environment)
-    
+    try{ const response = await getToken(i, environment)
+    if (response == '200') {
+      console.log('success!')
+      updateMessages(`Successfully connected to: ${environment.name}`)
+    }
+  }  catch(error) {
+          console.error("An unexpected error occured:", error)
+          updateMessages(`An unexpected error occured: ${error}`)
+        }
   }
 
   
 
-  const emptyEnvironment = { name: "", uri: "", key: "", secret: "" }
+  const emptyEnvironment = { name: "", uri: "", key: "", secret: "", token:"" }
 
   const newEnvironment = () => {
     const newEnvironments = [...environments, emptyEnvironment]
@@ -138,14 +155,15 @@ export const MigrationTool = () => {
     setEnvironments(newEnvironments)
   }
 
-  const setEnvironmentAttribute = (i: number, name: any, uri: any, key: any, secret: any) => {
+  const setEnvironmentAttribute = (i: number, name: any, uri: any, key: any, secret: any, token: any=null) => {
     const newEnvironments = [
       ...environments.slice(0, i),
       Object.assign({}, environments[i], {
         name: name || environments[i].name,
         uri: uri || environments[i].uri,
         key: key || environments[i].key,
-        secret: secret || environments[i].secret
+        secret: secret || environments[i].secret,
+        token: token || environments[i].token
       }),
       ...environments.slice(i + 1)]
     setEnvironments(newEnvironments)
@@ -204,7 +222,9 @@ export const MigrationTool = () => {
         </Form>
         <ExtensionButton size="small" onClick={closeEnvironment}>Save</ExtensionButton>
         <ExtensionButton size="small" onClick={() => testConnection(i)}>Test</ExtensionButton> 
-        <ExtensionButton size="small" onClick={() => experimentClick()}>Test Connection to Hack</ExtensionButton> 
+        <ExtensionButton size="small" onClick={() => getToken(i, environments[i])}>Test Connection to Hack</ExtensionButton> 
+        <ExtensionButton size="small" onClick={() => showTokenClick()}>Show Token Click</ExtensionButton> 
+        <ExtensionButton size="small" onClick={() => getFoldersClick()}>Show Folders</ExtensionButton> 
         
         <br/>
       </>
@@ -271,7 +291,7 @@ export const MigrationTool = () => {
         </Box>
       </Box>
 
-      {/* <Box width="90%" pr="large" maxWidth='90vw'>
+      <Box width="20%" pr="small" maxWidth='20vw'>
         <StyledPre>{messages}</StyledPre>
         {(messages.length > 0) &&
           <ExtensionButton mt="small" variant="outline"
@@ -280,7 +300,7 @@ export const MigrationTool = () => {
             Clear messages
           </ExtensionButton>
         }
-      </Box> */}
+      </Box>
     </>
   )
 }

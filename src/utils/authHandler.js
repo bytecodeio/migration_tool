@@ -12,8 +12,8 @@ const GUID = '57d1d41b14134fddcb7c0e322fb57dc2'
 // const url = 'looker.bytecode.io'
 // const api_port = '19999'
 // const api_version = '4.0'
-// const client_id = 'JnTJhNk7t9j4bfShg2V3'
-// const client_secret = 'X3Y56zVwbpZfrYY2GK4YZK2z'
+// const client_id = 'X'
+// const client_secret = 'X'
 
 export const authHandler = async (environment) => {
     const extensionContext = useContext(ExtensionContext)

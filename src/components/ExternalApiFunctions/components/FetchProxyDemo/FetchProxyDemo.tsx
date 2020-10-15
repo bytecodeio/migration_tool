@@ -92,8 +92,8 @@
 //   const domain = 'bytecode.io'
 //   const api_port = '19999'
 //   const api_version = '4.0'
-//   const client_id = 'JnTJhNk7t9j4bfShg2V3'
-//   const client_secret = 'X3Y56zVwbpZfrYY2GK4YZK2z'
+//   const client_id = 'X'
+//   const client_secret = 'X'
 
 // // https://{{subdomain}}.{{domain}}:{{api_port}}/api/{{api_version}}/login?client_id={{client_id}}&client_secret={{client_secret}}
 
