@@ -1,3 +1,4 @@
+work in /* tslint:disable */
 
 import isEqual from 'lodash/isEqual'
 import React, { useContext, useEffect, useState } from "react"
@@ -15,8 +16,8 @@ import {
   getCore40SDK
 } from "@looker/extension-sdk-react"
 // import {lookerAuth} from "../../utils/login-popup"
-
-
+// import {authHandler} from '../../utils/authHandler'
+// import {sampleEnvironment} from '../../utils/sampleEnvironment'
 export const MigrationTool = () => {
   const location = useLocation()
   const [routeData, setRouteData] = useState<any>({})
@@ -28,15 +29,13 @@ export const MigrationTool = () => {
   const [isValidationSuccess, setIsValidationSuccess] = useState<Boolean>()
   const [openEnvironmentIndex, setOpenEnvironmentIndex] = useState<number | null>(0)
  
-  const extensionContext = useContext<ExtensionContextData>(ExtensionContext)
-  const sdk = extensionContext.core40SDK
+  const [token, setToken] =useState<string>()
+
+  const sdk = getCore40SDK
 
   // useEffect(() => {
-  //   if (!projects || projects.length == 0) {
-
-  //     allProjectsFetch()
-  //   }
-  // })
+  //   authHandler(sampleEnvironment)
+  // },[fetching])
 
   // useEffect(() => {
   //   if (location.search || location.pathname.includes('?')) {
@@ -47,6 +46,36 @@ export const MigrationTool = () => {
   //     }
   //   }
   // }, [location])
+
+  const extensionContext = useContext<ExtensionContextData>(ExtensionContext)
+  // Get access to the extension SDK and the looker API SDK.
+  const { extensionSDK, core40SDK } = extensionContext
+
+  const experimentClick = async () => {
+    const result = await extensionSDK.serverProxy(
+      'https://hack.looker.com:19999/api/4.0/login',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+        body:
+          'client_id=fNKf4PRXfyNmshTzqmq9&client_secret=399FFJ9c262Cztwtj78chDsk',
+      }
+    )
+    console.log({ result })
+    setToken(result.body.access_token || '')
+    const folders = await extensionSDK.fetchProxy(
+      'https://hack.looker.com:19999/api/4.0/folders/home',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${result.body.access_token}`,
+        },
+      }
+    )
+    console.log({ folders })
+  }
 
   const updateMessages = (message: string, error?: any) => {
     setMessages(prevMessages => {
@@ -140,6 +169,7 @@ export const MigrationTool = () => {
 
     return (
       <>
+
         <Form>
           <InputText
             key="name"
@@ -174,6 +204,8 @@ export const MigrationTool = () => {
         </Form>
         <ExtensionButton size="small" onClick={closeEnvironment}>Save</ExtensionButton>
         <ExtensionButton size="small" onClick={() => testConnection(i)}>Test</ExtensionButton> 
+        <ExtensionButton size="small" onClick={() => experimentClick()}>Test Connection to Hack</ExtensionButton> 
+        
         <br/>
       </>
     )

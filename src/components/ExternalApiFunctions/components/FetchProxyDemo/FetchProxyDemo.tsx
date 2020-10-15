@@ -1,3 +1,5 @@
+ /* tslint:disable */
+
 /*
  * The MIT License (MIT)
  *
@@ -22,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
   ActionList,
   ActionListItemAction,
@@ -71,27 +73,37 @@ export const FetchProxyDemo: React.FC<FetchProxyDemoProps> = ({ dataDispatch, da
   // Get access to the extension SDK and the looker API SDK.
   const { extensionSDK, core40SDK } = extensionContext
   // Component state
-  const { posts, name, title, errorMessage, postsServer } = dataState
-
+  // const { posts, name, title, errorMessage, postsServer } = dataState
+  // postsServer isn't used anymore.
+ 
+  const [fetching,changeFetching] = useState(true)
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-      // Call me to get user name for including in the post
-      const value = await core40SDK.ok(core40SDK.me())
-        updateName(dataDispatch, value.display_name || "Unknown")
-      } catch(error) {
-        updateName(dataDispatch, "Unknown")
-      }
-      fetchPosts(true)
-    }
-    fetchData()
-  }, [postsServer])
+    onCreatePostSubmit()
+  }, [fetching])
 
-  const onCreatePostSubmit = async (event: React.FormEvent) => {
+  // const {  name, title, errorMessage, url, key, secret } = dataState
+
+  const name = ''
+  const title = ''
+  const postsServer = ''
+  const errorMessage = ''
+  const posts : Array<any>= []
+  const subdomain = 'looker'
+  const domain = 'bytecode.io'
+  const api_port = '19999'
+  const api_version = '4.0'
+  const client_id = 'JnTJhNk7t9j4bfShg2V3'
+  const client_secret = 'X3Y56zVwbpZfrYY2GK4YZK2z'
+
+// https://{{subdomain}}.{{domain}}:{{api_port}}/api/{{api_version}}/login?client_id={{client_id}}&client_secret={{client_secret}}
+
+  const onCreatePostSubmit = async () => {
     // Need to prevent default processing for event from occurring.
     // The button is rendered in a form and default action is to
     // submit the form.
-    event.preventDefault()
+    // event.preventDefault()
+
+    var body = `{client_id:${encodeURIComponent(client_id)}&client_secret:${encodeURIComponent(client_secret)}}`
 
     try {
       // A more complex use of the fetch proxy. In this case the
@@ -99,19 +111,18 @@ export const FetchProxyDemo: React.FC<FetchProxyDemoProps> = ({ dataDispatch, da
       // will not process it otherwise.
       // Note the that JSON object in the string MUST be converted to
       // a string.
-      let response = await extensionSDK.fetchProxy(
-        `${postsServer}/posts`,
-        {
+      let response = await extensionSDK.serverProxy(
+        // `https://${subdomain}.${domain}:${api_port}/api/${api_version}/login?client_id=${client_id}&client_secret=${client_secret}`,
+        // `https://${subdomain}.${domain}:${api_port}/api/${api_version}/login`,
+        `https://${subdomain}.${domain}/api/${api_version}/login`,
           method: 'POST',
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
           },
-          body: JSON.stringify({
-            title,
-            author: name
-          })
+          body: body
         })
       if (response.ok) {
+        console.dir(response)
         updateTitle(dataDispatch, "")
         updateErrorMessage(dataDispatch, undefined)
         fetchPosts()
