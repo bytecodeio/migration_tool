@@ -93,7 +93,7 @@ export const EmbedDashboard: React.FC<EmbedProps> = () => {
       <SandboxStatus/>
       <Label htmlFor="toggle">
         Dashboard next
-        <ToggleSwitch ml='small' onChange={toggleDashboard} on={dashboardNext} id='toggle'/>
+        <ToggleSwitch ml='small' onChange={toggleDashboard} on={dashboardNext} />
       </Label>
       <Button m='medium' onClick={runDashboard} disabled={running}>Run Dashboard</Button>
       <EmbedContainer ref={embedCtrRef}/>

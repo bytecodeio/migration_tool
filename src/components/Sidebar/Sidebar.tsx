@@ -32,42 +32,35 @@ import { ROUTES } from '../../App'
 
 export const Sidebar: React.FC<SidebarProps> = ({ route }) => {
   return (
-    <Box display="flex" flexDirection="column">
+    <Box display="flex" flexDirection="column" width="20%"maxWidth='20vw'>
       <MenuGroup type="none" mt="xsmall">
-        <StyledRouterLink to={ROUTES.API_ROUTE}>
-          <MenuItem icon="Flag" current={route === ROUTES.API_ROUTE}>
-            Api Functions
+        <StyledRouterLink to={ROUTES.INSTANCES_ROUTE}>
+          <MenuItem icon="LogoRings" current={route === ROUTES.INSTANCES_ROUTE}>
+            Instances
           </MenuItem>
         </StyledRouterLink>
         
-        <StyledRouterLink to={ROUTES.CORESDK_ROUTE}>
-          <MenuItem icon="Clock" current={route.startsWith(ROUTES.CORESDK_ROUTE)}>
-            Core SDK Functions
+        <StyledRouterLink to={ROUTES.CODE_DEPLOY_ROUTE}>
+          <MenuItem icon="Code" current={route.startsWith(ROUTES.CODE_DEPLOY_ROUTE)}>
+           Code Deploy
           </MenuItem>
         </StyledRouterLink>
-        <StyledRouterLink to={ROUTES.EMBED_DASHBOARD}>
-          <MenuItem icon="ApplicationSelect" current={route === ROUTES.EMBED_DASHBOARD}>
-            Embed Dashboard
+       
+        <StyledRouterLink to={ROUTES.OBJECT_DEPLOY_ROUTE}>
+          <MenuItem icon="ChartPie" current={route.startsWith(ROUTES.OBJECT_DEPLOY_ROUTE)}>
+           Object Deploy
           </MenuItem>
         </StyledRouterLink>
-        <StyledRouterLink to={ROUTES.EMBED_EXPLORE}>
-          <MenuItem icon="ApplicationSelect" current={route === ROUTES.EMBED_EXPLORE}>
-            Embed Explore
+
+        <StyledRouterLink to={ROUTES.CONTENT_VALIDATOR_ROUTE}>
+          <MenuItem icon="Validate" current={route.startsWith(ROUTES.CONTENT_VALIDATOR_ROUTE)}>
+           Content Validator
           </MenuItem>
         </StyledRouterLink>
-        <StyledRouterLink to={ROUTES.EMBED_LOOK}>
-          <MenuItem icon="ApplicationSelect" current={route === ROUTES.EMBED_LOOK}>
-            Embed Look
-          </MenuItem>
-        </StyledRouterLink>
+
         <StyledRouterLink to={ROUTES.EXTERNAL_API_ROUTE}>
-          <MenuItem icon="ApplicationSelect" current={route.startsWith(ROUTES.EXTERNAL_API_ROUTE)}>
-            External Api Functions
-          </MenuItem>
-        </StyledRouterLink>
-        <StyledRouterLink to={ROUTES.MISC_ROUTE}>
-          <MenuItem icon="ApplicationSelect" current={route === ROUTES.MISC_ROUTE}>
-            Miscellaneous Functions
+          <MenuItem icon="Validate" current={route.startsWith(ROUTES.EXTERNAL_API_ROUTE)}>
+           External Calls
           </MenuItem>
         </StyledRouterLink>
       </MenuGroup>

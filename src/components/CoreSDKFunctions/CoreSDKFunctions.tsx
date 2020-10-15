@@ -62,7 +62,7 @@ export const CoreSDKFunctions = () => {
 
   const allConnectionsClick = async () => {
     try {
-      const value = await sdk.ok(sdk.all_connections())
+      const value: Array<any>= await sdk.ok(sdk.all_connections())
       value.forEach(connection => {
         updateMessages(connection.name || '')
       })

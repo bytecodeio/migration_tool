@@ -28,7 +28,7 @@ import { CoreSDKFunctions } from "./components/CoreSDKFunctions"
 import { ApiFunctions } from "./components/ApiFunctions"
 import React, { useState } from "react"
 import { Switch, Route, Redirect } from "react-router-dom"
-import { theme, Box, GlobalStyle } from "@looker/components"
+import { theme, Box, GlobalStyle, Heading } from "@looker/components"
 import styled, { ThemeProvider } from "styled-components"
 import { ExtensionProvider } from "@looker/extension-sdk-react"
 import { EmbedDashboard } from "./components/Embed"
@@ -42,13 +42,11 @@ interface AppProps {
 }
 
 export enum ROUTES {
-  API_ROUTE = "/api",
-  CORESDK_ROUTE = "/coresdk",
-  EMBED_DASHBOARD = "/embed/dashboard",
-  EMBED_EXPLORE = "/embed/explore",
-  EMBED_LOOK = "/embed/look",
-  EXTERNAL_API_ROUTE = "/externalapi",
-  MISC_ROUTE = "/misc",
+  INSTANCES_ROUTE = "/instances",
+  CODE_DEPLOY_ROUTE = "/code_deploy",
+  OBJECT_DEPLOY_ROUTE = "/object_deploy",
+  CONTENT_VALIDATOR_ROUTE = "/content_validator",
+  EXTERNAL_API_ROUTE = "/external_api"
 }
 
 export const App: React.FC<AppProps> = hot(() => {
@@ -65,9 +63,24 @@ export const App: React.FC<AppProps> = hot(() => {
       <ThemeProvider theme={theme}>
         <>
           <GlobalStyle />
-          <Layout> <Box>
-            <MigrationTool />
-          </Box>
+          
+          <Layout>
+            <Heading as="h1" mt="xlarge">Migration Tool</Heading>
+            <Box display="flex" flexDirection="row">
+              <Sidebar route={route} routeState={routeState}/>
+            <Switch>
+                <Route path={ROUTES.INSTANCES_ROUTE}>
+                  <MigrationTool />
+                </Route>
+                
+                <Route path={ROUTES.EXTERNAL_API_ROUTE}>
+                  <ExternalApiFunctions />
+                </Route>
+                
+                <Redirect to={ROUTES.INSTANCES_ROUTE} />
+            </Switch>
+              
+              </Box>
           </Layout>
           {/* <Layout>
             <Sidebar route={route} routeState={routeState}/>
@@ -112,5 +125,5 @@ export const Layout = styled(Box)`
   grid-gap: 20px;
   margin-left: 20px;
   grid-template-columns: auto;
-  width: 100vw
+  width: 100vw;
 `
