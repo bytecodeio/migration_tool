@@ -101,9 +101,9 @@ API functions demonstrates the following function
 - Generate error - demonstrates that extension errors are reported. Note that in Looker server development mode these are not reported.
 - Route test - demonstrates routing with query strings and push state.
 
-### Core SDK Functions
+### MigrationTool
 
-Core SDK functions demonstrates various calls the Looker SDK.
+MigrationTool demonstrates various calls the Looker SDK.
 
 - All connections (GET method)
 - Search folders (GET with parameters)
