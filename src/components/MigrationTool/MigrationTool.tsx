@@ -1,4 +1,4 @@
-work in /* tslint:disable */
+ /* tslint:disable */
 
 import isEqual from 'lodash/isEqual'
 import React, { useContext, useEffect, useState } from "react"
@@ -65,7 +65,7 @@ export const MigrationTool = () => {
     )
     console.log({ result })
     setToken(result.body.access_token || '')
-    const folders = await extensionSDK.fetchProxy(
+    const folders = await extensionSDK.serverProxy(
       'https://hack.looker.com:19999/api/4.0/folders/home',
       {
         method: 'GET',
@@ -85,18 +85,18 @@ export const MigrationTool = () => {
     })
   }
 
-  const allProjectsFetch = async () => {
-    try {
-      const value = await sdk.ok(sdk.all_projects())
-      const projectArray: Array<any> = []
-      value.forEach((project: any) => {
-        projectArray.push({ name: project.name || '', git_remote_url: project.git_remote_url || '', checked: true })
-      })
-      setProjects(projectArray)
-    } catch (error) {
-      updateMessages('Error getting projects', error)
-    }
-  }
+  // const allProjectsFetch = async () => {
+  //   try {
+  //     const value = await sdk.ok(sdk.all_projects())
+  //     const projectArray: Array<any> = []
+  //     value.forEach((project: any) => {
+  //       projectArray.push({ name: project.name || '', git_remote_url: project.git_remote_url || '', checked: true })
+  //     })
+  //     setProjects(projectArray)
+  //   } catch (error) {
+  //     updateMessages('Error getting projects', error)
+  //   }
+  // }
 
   const clickProjectCheckbox = (i: number) => {
     const newProjects = [
