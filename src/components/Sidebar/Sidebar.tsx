@@ -58,11 +58,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ route }) => {
           </MenuItem>
         </StyledRouterLink>
 
-        <StyledRouterLink to={ROUTES.EXTERNAL_API_ROUTE}>
+        {/* <StyledRouterLink to={ROUTES.EXTERNAL_API_ROUTE}>
           <MenuItem icon="Validate" current={route.startsWith(ROUTES.EXTERNAL_API_ROUTE)}>
            External Calls
           </MenuItem>
-        </StyledRouterLink>
+        </StyledRouterLink> */}
       </MenuGroup>
     </Box>
   )

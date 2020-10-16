@@ -72,7 +72,12 @@ export const App: React.FC<AppProps> = hot(() => {
                 <Route path={ROUTES.INSTANCES_ROUTE}>
                   <MigrationTool />
                 </Route>
-                
+                <Route path={ROUTES.OBJECT_DEPLOY_ROUTE}>
+                  <MigrationTool />
+                </Route>
+                <Route path={ROUTES.CONTENT_VALIDATOR_ROUTE}>
+                  <MigrationTool />
+                </Route>
                 {/* <Route path={ROUTES.EXTERNAL_API_ROUTE}>
                   <ExternalApiFunctions />
                 </Route> */}
