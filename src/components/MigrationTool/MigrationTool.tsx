@@ -15,6 +15,7 @@ import {
   ExtensionContextData,
   getCore40SDK
 } from "@looker/extension-sdk-react"
+import { stringComparator } from '@looker/components/dist/types/ActionList/utils/sort_utils';
 // import {lookerAuth} from "../../utils/login-popup"
 // import {authHandler} from '../../utils/authHandler'
 // import {sampleEnvironment} from '../../utils/sampleEnvironment'
@@ -438,6 +439,14 @@ export const MigrationTool = () => {
     updateMessages(`Total Alerts Validated: ${JSON.stringify(validationResponse.body.total_alerts_validated)}`)
     updateMessages(`Total Explores Validated: ${JSON.stringify(validationResponse.body.total_explores_validated)}`)
     updateMessages(`Total Errors: ${JSON.stringify(validationResponse.body.content_with_errors.length)}`)
+    validationResponse.body.content_with_errors.forEach((valErr: { id: number; errors:Array<any>; }) =>{
+      var errMsg = `ERROR ${Number(valErr.id)+1}: `;
+      valErr.errors.forEach((valErr2: { message: string; }) => {
+        errMsg += valErr2.message + `\n`;
+      })
+      updateMessages(errMsg)
+    })
+    updateMessages("Validation Complete.")
   }
 
   const migrateDashboards = async (ids:Array<number>,parent_folder_id:number) => {
