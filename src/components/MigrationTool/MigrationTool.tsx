@@ -337,11 +337,13 @@ export const MigrationTool = () => {
             onChange={(x: any) => setEnvironmentKey(i, x.target.value)}
           />
           <InputText
+            type="password"
             key="secret"
             label="APIv3 Secret"
             placeholder="Enter an APIv3 Secret"
             value={environments[i].secret}
             onChange={(x: any) => setEnvironmentSecret(i, x.target.value)}
+
           />
         </Form>
         <Space><ExtensionButton size="small" onClick={() => closeEnvironment(i)}>Save</ExtensionButton>
