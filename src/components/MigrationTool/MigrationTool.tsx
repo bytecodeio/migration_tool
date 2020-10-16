@@ -390,7 +390,29 @@ export const MigrationTool = () => {
   const showValidator = location.pathname == '/content_validator'
 
   const validator = () => {
-    // Validator calls here!
+    return(<>
+      <SpaceVertical>
+        <ExtensionButton size="small" onClick={() => runContentValidationOnInstance()}>Validate {targetEnvironment.name}</ExtensionButton> 
+      </SpaceVertical>
+      </>)
+  }
+
+  const runContentValidationOnInstance = async () => {
+    updateMessages("Validating Content...")
+
+    const validationResponse = await extensionSDK.serverProxy(
+      `${targetEnvironment.uri}/api/4.0/content_validation`,
+      { method: 'GET', headers: {Authorization: `Bearer ${targetEnvironment.token}`,},}
+    )
+    // updateMessages(JSON.stringify(validationResponse.body))
+    updateMessages(`Time to Validate: ${JSON.stringify(validationResponse.body.computation_time)} seconds`)
+    updateMessages(`Total Looks Validated: ${JSON.stringify(validationResponse.body.total_looks_validated)}`)
+    updateMessages(`Total Dashboard Elements Validated: ${JSON.stringify(validationResponse.body.total_dashboard_elements_validated)}`)
+    updateMessages(`Total Dashboard Filters Validated: ${JSON.stringify(validationResponse.body.total_dashboard_filters_validated)}`)
+    updateMessages(`Total Scheduled Plans Validated: ${JSON.stringify(validationResponse.body.total_scheduled_plans_validated)}`)
+    updateMessages(`Total Alerts Validated: ${JSON.stringify(validationResponse.body.total_alerts_validated)}`)
+    updateMessages(`Total Explores Validated: ${JSON.stringify(validationResponse.body.total_explores_validated)}`)
+    updateMessages(`Total Errors: ${JSON.stringify(validationResponse.body.content_with_errors.length)}`)
   }
 
   const migrateDashboards = async (ids:Array<number>,parent_folder_id:number) => {
