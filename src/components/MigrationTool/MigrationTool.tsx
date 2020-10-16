@@ -387,6 +387,11 @@ export const MigrationTool = () => {
   }
   const showInstances = location.pathname == '/instances'
   const showObjectDeploy = location.pathname == "/object_deploy"
+  const showValidator = location.pathname == '/content_validator'
+
+  const validator = () => {
+    // Validator calls here!
+  }
 
   const migrateDashboards = async (ids:Array<number>,parent_folder_id:number) => {
     updateMessages("Migrating Dashboards.")
@@ -574,7 +579,14 @@ export const MigrationTool = () => {
           border="1px solid black"
           borderRadius="4px"
         >
-        
+
+
+          {showInstances ? <>
+          {instanceList()}
+          <ExtensionButton size="small" onClick={newEnvironment}>New Instance</ExtensionButton>
+          </>
+          : null }
+
           {showObjectDeploy ? 
           <>
           {instanceSelector()}
@@ -582,11 +594,13 @@ export const MigrationTool = () => {
           </>
           : null
           }
-         {showInstances ? <>
-          {instanceList()}
-          <ExtensionButton size="small" onClick={newEnvironment}>New Instance</ExtensionButton>
+       
+          {showValidator ?
+          <>
+           {instanceSelector()}
+           {validator()}
           </>
-         : null }
+          : null}
          
         </Box>
       </Box>
