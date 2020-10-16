@@ -65,7 +65,10 @@ export const App: React.FC<AppProps> = hot(() => {
           <GlobalStyle />
           
           <Layout>
-            <Heading as="h1" mt="xxxlarge">Linking Looker</Heading>
+            <center>
+              <img height="200vw" src="https://bytecode-data-load-exercise.s3-us-west-2.amazonaws.com/linking_looker_icon.png" alt="Linking Looker"/>
+            </center>
+            {/* <Heading as="h1" mt="xxxlarge">Linking Looker</Heading> */}
             <Box display="flex" flexDirection="row">
               <Sidebar route={route} routeState={routeState}/>
             <Switch>
