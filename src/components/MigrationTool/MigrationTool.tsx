@@ -544,10 +544,10 @@ export const MigrationTool = () => {
           const indexOfMatchingElement = dashboardElementMap.findIndex(x => x.sourceId == dlc.dashboard_element_id );  
           return {
             'dashboard_element_id': dashboardElementMap[indexOfMatchingElement].targetId,
-            "row": Number(dlc.row),
-            "column": Number(dlc.column),
-            "width": Number(dlc.width),
-            "height": Number(dlc.height),
+            "row": String(dlc.row),
+            "column": String(dlc.column),
+            "width": String(dlc.width),
+            "height": String(dlc.height),
             "deleted": dlc.deleted,
             "element_title": dlc.element_title,
             "element_title_hidden": dlc.element_title_hidden,
