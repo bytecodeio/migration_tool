@@ -65,7 +65,7 @@ export const App: React.FC<AppProps> = hot(() => {
           <GlobalStyle />
           
           <Layout>
-            <Heading as="h1" mt="xlarge">Migration Tool</Heading>
+            <Heading as="h1" mt="xxxlarge">Linking Looker</Heading>
             <Box display="flex" flexDirection="row">
               <Sidebar route={route} routeState={routeState}/>
             <Switch>

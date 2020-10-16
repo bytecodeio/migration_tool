@@ -33,7 +33,7 @@ export const MigrationTool = () => {
   const [token, setToken] =useState<string>()
   const [sharedFolderSourceData, setSharedFolderSourceData] =useState<any>()
   const [sharedFolderTargetData, setSharedFolderTargetData] =useState<any>()
-
+  const [sourceFolderIdSelection, setSourceFolderIdSelection] = useState('home')
   const sdk = getCore40SDK
 
   // useEffect(() => {
@@ -70,10 +70,10 @@ export const MigrationTool = () => {
     return result.status
   }
 
-  const migrateSharedFolder = async () => {
+  const migrateFolder = async () => {
     // get the root shared folder id from the target
     const originalTargetSharedFolder = await extensionSDK.serverProxy(
-      `${targetEnvironment.uri}/api/4.0/folders/home`,
+      `${targetEnvironment.uri}/api/4.0/folders/${sourceFolderIdSelection}`,
       {
         method: 'GET',
         headers: {
@@ -83,7 +83,7 @@ export const MigrationTool = () => {
     )
     const newTargetSharedFolderData: any = {
       parent_id: originalTargetSharedFolder.body.id,
-      name: "New Migrated Shared Folder"
+      name: `New Migrated ${originalTargetSharedFolder.body.name} Folder`
     }
     // put the new folder in the target
     const newTarget = await extensionSDK.serverProxy(
@@ -127,8 +127,8 @@ export const MigrationTool = () => {
     const newSharedFolderSourceData = {
       child_ids: child_ids,
       source_folder_id: folders.body.id,
-      source_dashboard_ids: folders.body.dashboards.map(x => x.id),
-      source_look_ids: folders.body.looks.map(x => x.id)
+      source_dashboard_ids: folders.body.dashboards.map((x:any) => {return x.id}),
+      source_look_ids: folders.body.looks.map((x:any) => {return x.id})
     }
     setSharedFolderSourceData(newSharedFolderSourceData)
     updateMessages("Shared folder source details:")
@@ -376,12 +376,24 @@ export const MigrationTool = () => {
   }
   const contentMigration = () => {
     return (<>
-    <SpaceVertical><ExtensionButton size="small" onClick={() => getSharedFolderClick(environments[fromEnvironmentIndex])}>Pull Shared Folder</ExtensionButton> 
-      <ExtensionButton size="small" onClick={() => migrateSharedFolder()}>Create New Shared Folder In Target</ExtensionButton> 
-      <ExtensionButton size="small" onClick={() => migrateLooks(sharedFolderSourceData.source_look_ids,sharedFolderTargetData.id)}>Migrate Shared Folder Looks</ExtensionButton> 
-      <ExtensionButton size="small" onClick={() => migrateDashboards(sharedFolderSourceData.source_dashboard_ids,sharedFolderTargetData.id)}>Migrate Shared Folder Dashboards</ExtensionButton> 
+      <br/>
+      <SpaceVertical>
+         <Space>
+           <InputText
+            key="name"
+            width="10vw"
+            label="Source Folder Id"
+            value={sourceFolderIdSelection}
+            onChange={(x: any) =>
+              setSourceFolderIdSelection(x.target.value || '')
+            }
+          />
+          <ExtensionButton size="small" onClick={() => getSharedFolderClick(environments[fromEnvironmentIndex])}>Pull Folder</ExtensionButton> 
+        </Space>
+      <ExtensionButton size="small" onClick={() => migrateFolder()}>Create New Folder In Target</ExtensionButton> 
+      <ExtensionButton size="small" onClick={() => migrateLooks(sharedFolderSourceData.source_look_ids,sharedFolderTargetData.id)}>Migrate Folder Looks</ExtensionButton> 
+      <ExtensionButton size="small" onClick={() => migrateDashboards(sharedFolderSourceData.source_dashboard_ids,sharedFolderTargetData.id)}>Migrate Folder Dashboards</ExtensionButton> 
       <ExtensionButton size="small" onClick={() => migrateAllChildrenOfShared()}>Migrate All Subfolders, Iteratively</ExtensionButton> 
-    
     </SpaceVertical>
     </>)
   }
@@ -424,6 +436,7 @@ export const MigrationTool = () => {
           )
           const newDashboardId = newDashboard.body.id
           updateMessages(`Successfully created new (empty) dashboard. ID=${newDashboardId}`)
+          const newDashboardLayoutsId = newDashboard.body.dashboard_layouts[0].id
  
         // We'll need to map element IDs for the layout!
         let dashboardElementMap = dashboard_elements.map((x:any)=> {
@@ -476,11 +489,12 @@ export const MigrationTool = () => {
         }))
        
         updateMessages(`Successfully created new Dashboard with all it's elements. Now creating layout. ID=${newDashboard.body.id}`)
-        // updateMessages(JSON.stringify(newDashboard, null, '\t'))
         
-        const mungedLayout = dashboard_layouts[0]
+        const activeDashboardLayoutID = dashboard_layouts.findIndex((x:any) => {return (x.active == true)})
+        const mungedLayout = dashboard_layouts[activeDashboardLayoutID]
         mungedLayout.dashboard_id = newDashboardId
-        delete mungedLayout.id
+        mungedLayout.id = newDashboardLayoutsId
+        mungedLayout.active = true
         // yikes. the layout components are a mess, they are a nested array that needs mapped updates.
         const newLayoutComponents = mungedLayout.dashboard_layout_components.map((dlc:any)=>{
           const indexOfMatchingElement = dashboardElementMap.findIndex(x => x.sourceId == dlc.dashboard_element_id );  
@@ -493,18 +507,20 @@ export const MigrationTool = () => {
             "deleted": dlc.deleted,
             "element_title": dlc.element_title,
             "element_title_hidden": dlc.element_title_hidden,
-            "vis_type": dlc.vis_type
+            "vis_type": dlc.vis_type,
+            'dashboard_layout_id':newDashboardLayoutsId
           }
         })
        
         mungedLayout.dashboard_layout_components = newLayoutComponents
-        //  updateMessages(JSON.stringify(mungedLayout, null, '\t'))
+         updateMessages(JSON.stringify(mungedLayout, null, '\t'))
         const newLayout = await extensionSDK.serverProxy(
-          `${targetEnvironment.uri}/api/4.0/dashboard_layouts`,
-          { method: 'POST', headers: {Authorization: `Bearer ${targetEnvironment.token}`,},
+          `${targetEnvironment.uri}/api/4.0/dashboard_layouts/${newDashboardLayoutsId}`,
+          { method: 'PATCH', headers: {Authorization: `Bearer ${targetEnvironment.token}`,},
             body: JSON.stringify(mungedLayout)
           }
         )
+
         updateMessages(`Successfully created new Dashboard layout. Now creating filters.`)
 
         const mungedFilters = dashboard_filters
