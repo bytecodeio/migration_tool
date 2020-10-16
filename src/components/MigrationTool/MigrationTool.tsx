@@ -73,8 +73,17 @@ export const MigrationTool = () => {
 
   const migrateFolder = async () => {
     // get the root shared folder id from the target
+    const originalSourceFolder = await extensionSDK.serverProxy(
+      `${sourceEnvironment.uri}/api/4.0/folders/${sourceFolderIdSelection}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${targetEnvironment.token}`,
+        },
+      }
+    )
     const originalTargetSharedFolder = await extensionSDK.serverProxy(
-      `${targetEnvironment.uri}/api/4.0/folders/${sourceFolderIdSelection}`,
+      `${targetEnvironment.uri}/api/4.0/folders/home`,
       {
         method: 'GET',
         headers: {
@@ -84,9 +93,11 @@ export const MigrationTool = () => {
     )
     const newTargetSharedFolderData: any = {
       parent_id: originalTargetSharedFolder.body.id,
-      name: `New Migrated ${originalTargetSharedFolder.body.name} Folder`
+      name: `Migrated ${originalSourceFolder.body.name}`
     }
     // put the new folder in the target
+    updateMessages(JSON.stringify(newTargetSharedFolderData,null,'\t'))
+    
     const newTarget = await extensionSDK.serverProxy(
       `${targetEnvironment.uri}/api/4.0/folders`,
       {
@@ -97,6 +108,7 @@ export const MigrationTool = () => {
         body: JSON.stringify(newTargetSharedFolderData)
       }
     )
+    updateMessages(JSON.stringify(newTarget,null,'\t'))
     newTargetSharedFolderData.id = newTarget.body.id
     
     setSharedFolderTargetData(newTargetSharedFolderData)
@@ -104,13 +116,13 @@ export const MigrationTool = () => {
     // updateMessages(JSON.stringify(newTargetSharedFolderData))
   }
 
-  const getSharedFolderClick = async (environment:IEnvironment) => {
+  const getSharedFolderClick = async () => {
     const folders = await extensionSDK.serverProxy(
-      `${environment.uri}/api/4.0/folders/home`,
+      `${sourceEnvironment.uri}/api/4.0/folders/${sourceFolderIdSelection}`,
       {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${environment.token}`,
+          Authorization: `Bearer ${sourceEnvironment.token}`,
         },
       }
     )
@@ -334,9 +346,9 @@ export const MigrationTool = () => {
 
           />
         </Form>
-        <ExtensionButton size="small" onClick={() => closeEnvironment(i)}>Save</ExtensionButton>
+        <Space><ExtensionButton size="small" onClick={() => closeEnvironment(i)}>Save</ExtensionButton>
         <ExtensionButton size="small" onClick={() => testConnection(i)}>Test</ExtensionButton> 
-        
+        </Space>
         <br/>
       </>
     )
@@ -384,14 +396,14 @@ export const MigrationTool = () => {
          <Space>
            <InputText
             key="name"
-            width="10vw"
+            width="20%"
             label="Source Folder Id"
             value={sourceFolderIdSelection}
             onChange={(x: any) =>
               setSourceFolderIdSelection(x.target.value || '')
             }
           />
-          <ExtensionButton size="small" onClick={() => getSharedFolderClick(environments[fromEnvironmentIndex])}>Pull Folder</ExtensionButton> 
+          <ExtensionButton size="small" onClick={() => getSharedFolderClick()}>Pull Folder</ExtensionButton> 
         </Space>
       <ExtensionButton size="small" onClick={() => migrateFolder()}>Create New Folder In Target</ExtensionButton> 
       <ExtensionButton size="small" onClick={() => migrateLooks(sharedFolderSourceData.source_look_ids,sharedFolderTargetData.id)}>Migrate Folder Looks</ExtensionButton> 
@@ -406,6 +418,7 @@ export const MigrationTool = () => {
 
   const validator = () => {
     return(<>
+    <br/>
       <SpaceVertical>
         <ExtensionButton size="small" onClick={() => runContentValidationOnInstance()}>Validate {targetEnvironment.name}</ExtensionButton> 
       </SpaceVertical>
@@ -533,10 +546,10 @@ export const MigrationTool = () => {
           const indexOfMatchingElement = dashboardElementMap.findIndex(x => x.sourceId == dlc.dashboard_element_id );  
           return {
             'dashboard_element_id': dashboardElementMap[indexOfMatchingElement].targetId,
-            "row": dlc.row,
-            "column": dlc.column,
-            "width": dlc.width,
-            "height": dlc.height,
+            "row": Number(dlc.row),
+            "column": Number(dlc.column),
+            "width": Number(dlc.width),
+            "height": Number(dlc.height),
             "deleted": dlc.deleted,
             "element_title": dlc.element_title,
             "element_title_hidden": dlc.element_title_hidden,
